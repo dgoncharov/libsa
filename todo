@@ -1,0 +1,33 @@
+1.
+2. Minimize the number of times input or anything else has to be scanned.
+3. Minimize the number of allocations.
+4. Use alloca for small allocations.
+   alloca is faster, but less portable and restricted by the size of the frame.
+5. Get rid of copying from char[] to int[].
+6. Use bitset to store type.
+7. Maybe use a type other than int* to store input for smaller inputs?
+   Maybe pass void * and typesize?
+8. Write a readme.
+9.
+10. Is memcpy of buckets in insert_lms and induce_l needed?
+11. Profile.
+12. Generate a test which causes deep recursion.
+13. Portable makefile, usable on sun, 32, 64 bits, profiling.
+14. If there are few distinct values in input compared to abclen, then
+    it is possible to map all values in input to smaller values and have a
+    smaller buckets array. At the cost of small run time overhead and source
+    code complication.
+15. Replace recursion with iteration.
+16. The alignment of the output of buckets from print_sa gets messed up with
+    abclen > 99. Use abclen as a width specifier instead of %2.
+17. Fix wrapping of printed long inputs - either print vertically or print 79
+    chars and start a new line.
+18. Test with clang.
+19. reduce assumes that the lms blocks in result are sorted. Add an assert
+    in reduce that enforces this assumption.
+20. Figure out how to have the first loop in reduce scan through lms blocks,
+    rather than input. Maybe allocate another sorted_lms and init this
+    sorted_lms in induce_s and then have reduce scan through sorted_lms?
+21. Compare the lengths of lms blocks in lms_blocks_differ before the loop.
+    A beginning of one lms block the end of the prior lms block. This should be
+    possible with sorted_lms from todo 20.
