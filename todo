@@ -31,3 +31,4 @@
 21. Compare the lengths of lms blocks in lms_blocks_differ before the loop.
     A beginning of one lms block the end of the prior lms block. This should be
     possible with sorted_lms from todo 20.
+22. Expose alloc, alloc_init, alloc_copy to libsa.t.c.
