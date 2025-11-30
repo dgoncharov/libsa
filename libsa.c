@@ -317,7 +317,7 @@ reduce (int *lmsnames, const int *result, const int *input, const int *type,
 
     free (name);
     ++abclen;
-    print ("%*sreduced abclen = %lu, lmslen = %lu\n", depth, "", abclen,
+    print ("%*sreduced abclen = %zu, lmslen = %zu\n", depth, "", abclen,
            lmslen);
     print ("%*sreduced lms names ", depth, "");
     print_array (lmsnames, lmslen, 0, 0);
@@ -434,7 +434,7 @@ build (int *result, const int *input, size_t len, size_t abclen, int depth)
 
     ++nrecursion;
 
-    print ("%*sdepth = %d, len = %lu, abclen = %lu\n", depth, "", depth, len, abclen);
+    print ("%*sdepth = %d, len = %zu, abclen = %zu\n", depth, "", depth, len, abclen);
     print ("%*sinput ", depth, "");
     print_array (input, len, depth == 0, 0);
 
@@ -442,7 +442,7 @@ build (int *result, const int *input, size_t len, size_t abclen, int depth)
     buckets = alloc_init (0, abclen);
     lmslen = 0;
     type = alloc_init (0, len);
-    // We'll use 0 for S and 1 for L types.
+    /* We'll use 0 for S and 1 for L types.  */
     for (k = len - 1; k > 0; --k)
       {
         ++buckets[input[k]];
@@ -473,7 +473,7 @@ build (int *result, const int *input, size_t len, size_t abclen, int depth)
     for (k = 0, lmslen = 0; k < len - 1; ++k)
       if (type[k] > type[k+1])
         lms[lmslen++] = k + 1;
-    print ("%*slmslen = %lu, lms positions", depth, "", lmslen);
+    print ("%*slmslen = %zu, lms positions", depth, "", lmslen);
     print_array (lms, lmslen, 0, 0);
     assert (all_unique (lms, lmslen, len));
 
@@ -554,7 +554,7 @@ libsa_build (int *result, const char *input, size_t len)
 
     verbose = getenv ("LIBSA_LOG") != 0;
 
-    if (!*input)
+    if (len < 2)
       return *result = 0;
 
     nrecursion = 0;

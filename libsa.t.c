@@ -48,20 +48,19 @@ testimp (const char *input, int lineno)
     memset (sa, -1, (len + 1) * sizeof *sa);
     libsa_build (sa, input, len + 1);
 
-    ASSERT ((size_t) sa[0] == len, "sa[0] = %d, len = %lu, input = '%s'\n", sa[0], len, input);
+    ASSERT ((size_t) sa[0] == len, "sa[0] = %d, len = %zu, input = '%s'\n", sa[0], len, input);
     for (k = 0; k < len; ++k)
       {
         int x = sa[k];
         int y = sa[k+1];
-        ASSERT (x >= 0, "x = %d, k = %lu\n", x, k);
-        ASSERT ((size_t) x <= len, "x = %d, k = %lu, len = %lu\n", x, k, len);
-        ASSERT (y >= 0, "y = %d, k = %lu\n", y, k);
-        ASSERT ((size_t) y <= len, "y = %d, k = %lu, len = %lu\n", y, k, len);
+        ASSERT (x >= 0, "x = %d, k = %zu\n", x, k);
+        ASSERT ((size_t) x <= len, "x = %d, k = %zu, len = %zu\n", x, k, len);
+        ASSERT (y >= 0, "y = %d, k = %zu\n", y, k);
+        ASSERT ((size_t) y < len, "y = %d, k = %zu, len = %zu\n", y, k, len);
         ASSERT (x != y, "x = %d, y = %d\n", x, y);
-//        printf ("comparing, x = %d, y = %d, len = %lu, k = %lu, input + x = '%s', input + y = '%s'\n", x, y, len, k, input+x, input+y);
         /* This strcmp causes the test to run in quadratic time.  */
         rc = strcmp (input + x, input + y);
-        ASSERT (rc < 0, "rc = %d, len = %lu, k = %lu, lineno = %d, input + x = '%s', input + y = '%s'\n", rc, len, k, lineno, input+x, input+y);
+        ASSERT (rc < 0, "rc = %d, len = %zu, k = %zu, lineno = %d, input + x = '%s', input + y = '%s'\n", rc, len, k, lineno, input+x, input+y);
       }
 
     if (verbose)
@@ -126,18 +125,10 @@ int run_test (long test, int argc, char *argv[])
           break;
         case 9:
           {
-        //    const char input[] = "hello, world";
-        //    const char input[] = "gccttaacattattacgccta";
-//          /* This input causes multiple recursions.  */
+            /* This input causes multiple recursions.  */
             const char input[] =
                 "dabracadabracdabracadabracdabracadabracdabracadabracdabrac"
                 "adabracdabracadabracdabracadabracdabracadabrac";
-        //    const char input[] = "13514135141351413512";
-        //    const char input[] = "dabracadabrbc";
-        //    const char input[] = "cabbage";
-        //    const char input[] = "acgtgcctagcctbccgtgcc";
-        //    const char input[] = "32310";
-        //    const char input[] = "mmiissiissiippii";
             testimp (input, __LINE__);
             break;
           }
@@ -217,9 +208,11 @@ int run_test (long test, int argc, char *argv[])
 
 int main (int argc, char *argv[])
 {
+    int k;
+
     verbose = getenv ("LIBSA_LOG") != 0;
     if (argc >= 2) {
-      // Run the specified test.
+      /* Run the specified test.  */
       char *r;
       long test;
 
@@ -236,9 +229,9 @@ int main (int argc, char *argv[])
         fprintf (stderr, "%d tests failed\n", test_status);
       return test_status;
     }
-    // Run all tests.
-    for (int k = 0; run_test (k, argc, argv) != -1; ++k)
-            ;
+    /* Run all tests.  */
+    for (k = 0; run_test (k, argc, argv) != -1; ++k)
+      ;
     if (test_status > 0)
       fprintf (stderr, "%d tests failed\n", test_status);
     return test_status;
