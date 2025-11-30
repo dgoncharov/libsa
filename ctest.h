@@ -58,8 +58,8 @@ the working copy of ctest.h.  */
 #define CALL(Px, ...) Px(__VA_ARGS__)
 #define P0() fprintf(stderr, "\n")
 #define P1(...) fprintf(stderr, __VA_ARGS__)
-#define DISPATCH(_1, _2, _3, _4, _5, _6, _7, _8, Px, ...) Px
-#define PRINT(...) CALL(DISPATCH(__VA_ARGS__, P1, P1, P1, P1, P1, P1, P1, P0),\
+#define DISPATCH(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, Px, ...) Px
+#define PRINT(...) CALL(DISPATCH(__VA_ARGS__, P1, P1, P1, P1, P1, P1, P1, P1, P1, P1, P0),\
                                                         HEADLESS(__VA_ARGS__))
 
 static int test_status = 0;

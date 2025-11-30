@@ -572,6 +572,50 @@ libsa_build (int *result, const char *input, size_t len)
     return 0;
 }
 
+
+/* The top level function of the phi algorithm.
+   See "Permuted Longest-Common-Prefix Array"
+   by Juha Karkkainen at al for the description of this algorithm.  */
+int
+libsa_build_lcp (int *result, int *sa, const char *input, size_t len)
+{
+    int *phi, *plcp;
+    size_t k;
+    int l;
+
+    if (len < 2)
+      /* Need atleast 2 suffixes to have a common prefix.  */
+      return 0;
+
+    /* Build phi.  */
+    phi = alloc ((len - 1) * sizeof *phi);
+    for (k = 1; k < len; ++k)
+      phi[sa[k]] = sa[k-1];
+
+    /* Build plcp from phi.  */
+    plcp = alloc ((len - 1) * sizeof *plcp);
+    for (k = 0, l = 0; k < len - 1; ++k)
+      {
+        int j = phi[k];
+        while (input[k+l] == input[j+l])
+          ++l;
+        assert (l >= 0);
+        plcp[k] = l;
+        l = l ? l - 1 : 0;
+      }
+
+    /* Build lcp from plcp.  */
+    for (k = 1; k < len; ++k)
+      result[k] = plcp[sa[k]];
+
+    print ("lcp    ");
+    print_array (result + 1, len - 1, 0, 0);
+
+    free (plcp);
+    free (phi);
+    return 0;
+}
+
 /* Copyright (c) 2025 Dmitry Goncharov
  * dgoncharov@users.sf.net.
  *

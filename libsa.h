@@ -13,6 +13,13 @@ extern "C" {
    Return 0.  */
 int libsa_build (int *result, const char *input, size_t len);
 
+/* Store in result the lengths of the longest common prefixes of the pairs of
+   adjacent suffixes of the specified sa.
+   libsa_build_lcp runs in linear time and occupies linear space.
+   It is caller's responsibility to allocate result of the same size as input.
+   Return 0.  */
+int libsa_build_lcp (int *result, int *sa, const char *input, size_t len);
+
 #ifdef __cplusplus
 }
 #endif

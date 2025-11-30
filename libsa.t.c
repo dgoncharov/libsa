@@ -18,6 +18,14 @@ alloc (size_t size)
     return r;
 }
 
+/* Allocate an array of int of 'len' elements and memset it with 'value'.  */
+static int*
+alloc_init (int value, size_t len)
+{
+    int *r = alloc (len * sizeof *r);
+    return memset (r, value, len * sizeof *r);
+}
+
 static char *
 random_string (char *input, size_t len, int min, int max)
 {
@@ -72,6 +80,46 @@ testimp (const char *input, int lineno)
     free (sa);
 }
 
+static void
+testlcp_imp (const char *input, int lineno)
+{
+    size_t k, len = strlen (input);
+    int *sa, *lcp;
+
+    sa = alloc_init (-1, (len + 1) * sizeof *sa);
+    libsa_build (sa, input, len + 1);
+
+    lcp = alloc_init (-1, (len + 1) * sizeof *lcp);
+    libsa_build_lcp (lcp, sa, input, len + 1);
+    for (k = 1; k < len; ++k)
+      {
+        int x = sa[k-1];
+        int y = sa[k];
+        int l = lcp[k];
+        int j;
+
+        ASSERT (l >= 0, "l = %d, len = %zu, lineno = %d\n", l, len, lineno);
+        ASSERT ((size_t) l < len, "l = %d, len = %zu, lineno = %d\n", l, len, lineno);
+        /* This loop causes the test to run in quadratic time.  */
+        for (j = 0; j < l; ++j, ++x, ++y)
+          {
+            ASSERT ((size_t) x <= len, "x = %d, l = %d, len = %zu, lineno = %d\n", x, l, len, lineno);
+            ASSERT ((size_t) y < len, "y = %d, l = %d, len = %zu, lineno = %d\n", y, l, len, lineno);
+            ASSERT(input[x] == input[y],
+                   "x = %d, y = %d, l = %d, lineno = %d, input[%d] = %c, input[%d] = %c, input = '%s'\n",
+                   x, y, l, lineno, x, input[x], y, input[y], input);
+          }
+        if ((size_t) x <= len && (size_t) y < len)
+          {
+            ASSERT(input[x] != input[y],
+                   "x = %d, y = %d, l = %d, lineno = %d, input[%d] = %c, input[%d] = %c, input = '%s'\n",
+                   x, y, l, lineno, x, input[x], y, input[y], input);
+          }
+      }
+    free (lcp);
+    free (sa);
+}
+
 static
 int run_test (long test, int argc, char *argv[])
 {
@@ -104,24 +152,31 @@ int run_test (long test, int argc, char *argv[])
           }
         case 2:
           testimp ("", __LINE__);
+          testlcp_imp ("", __LINE__);
           break;
         case 3:
           testimp ("a", __LINE__);
+          testlcp_imp ("a", __LINE__);
           break;
         case 4:
           testimp ("aa", __LINE__);
+          testlcp_imp ("aa", __LINE__);
           break;
         case 5:
           testimp ("aaa", __LINE__);
+          testlcp_imp ("aaa", __LINE__);
           break;
         case 6:
           testimp ("aaaa", __LINE__);
+          testlcp_imp ("aaaa", __LINE__);
           break;
         case 7:
           testimp ("abababab", __LINE__);
+          testlcp_imp ("abababab", __LINE__);
           break;
         case 8:
           testimp ("dabracadabrac", __LINE__);
+          testlcp_imp ("dabracadabrac", __LINE__);
           break;
         case 9:
           {
@@ -130,6 +185,23 @@ int run_test (long test, int argc, char *argv[])
                 "dabracadabracdabracadabracdabracadabracdabracadabracdabrac"
                 "adabracdabracadabracdabracadabracdabracadabrac";
             testimp (input, __LINE__);
+            testlcp_imp (input, __LINE__);
+            break;
+          }
+        case 10:
+          {
+            const char input[] = "hello";
+            int sa[sizeof input], lcp[sizeof input];
+
+            memset (sa, -1, sizeof sa);
+            memset (lcp, -1, sizeof lcp);
+            libsa_build (sa, input, sizeof input);
+            libsa_build_lcp (lcp, sa, input, sizeof input);
+            ASSERT (lcp[1] == 0, "lcp[1] = %d\n", lcp[1]);
+            ASSERT (lcp[2] == 0, "lcp[2] = %d\n", lcp[2]);
+            ASSERT (lcp[3] == 0, "lcp[3] = %d\n", lcp[3]);
+            ASSERT (lcp[4] == 1, "lcp[4] = %d\n", lcp[4]);
+            ASSERT (lcp[5] == 0, "lcp[5] = %d\n", lcp[5]);
             break;
           }
         case 97:
@@ -138,6 +210,7 @@ int run_test (long test, int argc, char *argv[])
             char input[len];
             random_string (input, len, 32, 127);
             testimp (input, __LINE__);
+            testlcp_imp (input, __LINE__);
             break;
           }
         case 98:
@@ -146,6 +219,7 @@ int run_test (long test, int argc, char *argv[])
             char input[len];
             random_string (input, len, 0, 255);
             testimp (input, __LINE__);
+            testlcp_imp (input, __LINE__);
             break;
           }
         case 99:
@@ -196,6 +270,7 @@ int run_test (long test, int argc, char *argv[])
             input = alloc (len * sizeof *input);
             random_string (input, len, min, max);
             testimp (input, __LINE__);
+            testlcp_imp (input, __LINE__);
             free (input);
             break;
           }
