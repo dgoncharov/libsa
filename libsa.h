@@ -10,6 +10,8 @@ extern "C" {
 /* Store in result the indices of all suffixes of input sorted in ascending order.
    libsa_build runs in linear time and occupies linear space.
    It is caller's responsibility to allocate result of the same size as input.
+   input does not have to be null terminated, but input[len - 1] has to be
+   smaller than any element of input between (and including) 0 and len - 2.
    Return 0.  */
 int libsa_build (int *result, const char *input, size_t len);
 

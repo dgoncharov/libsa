@@ -242,6 +242,25 @@ all_sorted (const int *result, const int *input, size_t len, int depth)
     return 1;
 }
 
+/* Return 1 if the last element of the input is the smallest.
+   Return 0 otherwise.
+   Suffix array requires that the last element is the smallest. This ensures
+   that no suffix is a prefix of another suffix. Which in turn ensures that
+   every suffix has its index in the suffix array.  */
+static int
+last_smallest (const unsigned char *input, size_t len)
+{
+    size_t k;
+
+    for (k = 0; k < len - 2; ++k)
+      {
+        assert (input[len-1] < input[k]);
+        if (input[len-1] >= input[k])
+          return 0;
+      }
+    return 1;
+}
+
 /* Compare the lms block starting at position 'x' with the lms block at
    position 'y'. The lms blocks in 'input' are supposed to be sorted, even
    though equal lms blocks may still need to be swapped. The lms block at
@@ -556,6 +575,8 @@ libsa_build (int *result, const char *input, size_t len)
 
     if (len < 2)
       return *result = 0;
+
+    assert (last_smallest((const unsigned char*) input, len));
 
     nrecursion = 0;
     copy = alloc (len * sizeof *copy);
