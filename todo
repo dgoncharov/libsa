@@ -32,3 +32,4 @@
     A beginning of one lms block the end of the prior lms block. This should be
     possible with sorted_lms from todo 20.
 22. Expose alloc, alloc_init, alloc_copy to libsa.t.c.
+23. Get rid of struct child and use an array of int to store the child table.

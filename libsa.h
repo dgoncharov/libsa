@@ -22,6 +22,15 @@ int libsa_build (int *result, const char *input, size_t len);
    Return 0.  */
 int libsa_build_lcp (int *result, int *sa, const char *input, size_t len);
 
+struct child {
+  int up;
+  int down;
+  int next_lindex;
+};
+
+/* Store in result the child table of the specified lcp array.  */
+int libsa_build_child (struct child *result, int *lcp, size_t len);
+
 #ifdef __cplusplus
 }
 #endif

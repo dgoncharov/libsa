@@ -637,6 +637,72 @@ libsa_build_lcp (int *result, int *sa, const char *input, size_t len)
     return 0;
 }
 
+int libsa_build_child (struct child *result, int *lcp, size_t len)
+{
+    int last_index;
+    int *beg, *top, *end;
+    size_t k;
+
+    if (len < 1)
+      return 0;
+
+    beg = top = alloc ((1 + len) * sizeof *beg);
+    end = top + 1 + len;
+
+    last_index = 1;
+    *++top = 0; // push
+    for (k = 1; k < len; ++k)
+      {
+        assert (top > beg);
+        while (lcp[k] < lcp[*top])
+          {
+            assert (top > beg);
+            last_index = *top--; // pop
+            if (lcp[k] <= *top && *top != lcp[last_index])
+              result[*top].down = last_index;
+          }
+        assert (top > beg);
+        if (lcp[k] >= *top)
+          {
+            if (last_index != -1)
+              {
+                result[k].up = last_index;
+                last_index = -1;
+              }
+            assert (top + 1 < end);
+            *++top = k; // push
+          }
+      }
+
+    top = beg;
+    *++top = 0; // push
+    for (k = 1; k < len; ++k)
+      {
+        assert (top > beg);
+        while (lcp[k] < lcp[*top])
+          {
+            assert (top > beg);
+            --top; // pop
+          }
+        if (lcp[k] == lcp[*top])
+          {
+            assert (top > beg);
+            last_index = *top--; // pop
+            result[last_index].next_lindex = k;
+          }
+        assert (top + 1 < end);
+        *++top = k; // push
+      }
+
+    free (beg);
+
+    for (k = 0; k < len; ++k)
+      printf ("result[%zu].up = %d, result[%zu].down = %d, result[%zu].next_lindex = %d\n",
+              k, result[k].up, k, result[k].down, k, result[k].next_lindex);
+
+    return 0;
+}
+
 /* Copyright (c) 2025 Dmitry Goncharov
  * dgoncharov@users.sf.net.
  *

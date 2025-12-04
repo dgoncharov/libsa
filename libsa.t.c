@@ -204,6 +204,38 @@ int run_test (long test, int argc, char *argv[])
             ASSERT (lcp[5] == 0, "lcp[5] = %d\n", lcp[5]);
             break;
           }
+        case 11:
+          {
+            const char input[] = "acaaacatat~";
+            int sa[sizeof input], lcp[sizeof input];
+            struct child child[sizeof input];
+            memset (sa, -1, sizeof sa);
+            memset (lcp, -1, sizeof lcp);
+            libsa_build (sa, input, sizeof input);
+            testimp (input, __LINE__);
+
+            libsa_build_lcp (lcp, sa, input, sizeof input);
+            testlcp_imp (input, __LINE__);
+
+            libsa_build_child (child, lcp, sizeof input);
+            break;
+          }
+        case 12:
+          {
+            const char input[] = "abracadabradad";
+            int sa[sizeof input], lcp[sizeof input];
+            struct child child[sizeof input];
+            memset (sa, -1, sizeof sa);
+            memset (lcp, -1, sizeof lcp);
+            libsa_build (sa, input, sizeof input);
+            testimp (input, __LINE__);
+
+            libsa_build_lcp (lcp, sa, input, sizeof input);
+            testlcp_imp (input, __LINE__);
+
+            libsa_build_child (child, lcp, sizeof input);
+            break;
+          }
         case 97:
           {
             enum {len = 74391};
