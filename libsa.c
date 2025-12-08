@@ -637,7 +637,8 @@ libsa_build_lcp (int *result, int *sa, const char *input, size_t len)
     return 0;
 }
 
-int libsa_build_child (struct child *result, int *lcp, size_t len)
+int
+libsa_build_child (struct child *result, int *lcp, size_t len)
 {
     int last_index;
     int *beg, *top, *end;
@@ -702,6 +703,42 @@ int libsa_build_child (struct child *result, int *lcp, size_t len)
 
     return 0;
 }
+
+int
+get_child_intervals (int *result, const struct child *child, size_t len,
+                     int x, int y)
+{
+    int k = 0;
+    int x1, x2;
+
+    assert (x >= 0);
+    assert ((size_t) x <= len);
+    assert (y >= 0);
+    assert ((size_t) y <= len);
+    assert (!(x == 0 && (size_t) y == len));
+
+    if (x < child[y + 1].up && child[y + 1].up <= y)
+      x1 = child[y + 1].up;
+    else
+      x1 = child[x].down;
+
+    result[k++] = x;
+    result[k++] = x1 - 1;
+
+    while (child[x1].next_lindex)
+      {
+        x2 = child[x1].next_lindex;
+        result[k++] = x1;
+        result[k++] = x2 - 1;
+        x1 = x2;
+      }
+    result[k++] = x1;
+    result[k++] = y;
+    printf ("child intervals of [%d..%d]\n", x, y);
+    print_array (result, len, 0, 0);
+    return 0;
+}
+
 
 /* Copyright (c) 2025 Dmitry Goncharov
  * dgoncharov@users.sf.net.

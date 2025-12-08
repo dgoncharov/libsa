@@ -31,6 +31,11 @@ struct child {
 /* Store in result the child table of the specified lcp array.  */
 int libsa_build_child (struct child *result, int *lcp, size_t len);
 
+/* Store in result all child intervals of interval [x..y].  */
+int
+get_child_intervals (int *result, const struct child *child, size_t len,
+                     int x, int y);
+
 #ifdef __cplusplus
 }
 #endif

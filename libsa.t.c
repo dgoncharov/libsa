@@ -225,8 +225,12 @@ int run_test (long test, int argc, char *argv[])
             const char input[] = "abracadabradad";
             int sa[sizeof input], lcp[sizeof input];
             struct child child[sizeof input];
+            int intervals[sizeof input];
+
             memset (sa, -1, sizeof sa);
             memset (lcp, -1, sizeof lcp);
+            memset (intervals, -1, sizeof intervals);
+
             libsa_build (sa, input, sizeof input);
             testimp (input, __LINE__);
 
@@ -234,6 +238,13 @@ int run_test (long test, int argc, char *argv[])
             testlcp_imp (input, __LINE__);
 
             libsa_build_child (child, lcp, sizeof input);
+            get_child_intervals (intervals, child, sizeof input, 0, 5);
+            ASSERT (intervals[0] == 0, "intervals[0] = %d\n", intervals[0]);
+            ASSERT (intervals[1] == 1, "intervals[1] = %d\n", intervals[1]);
+            ASSERT (intervals[2] == 2, "intervals[2] = %d\n", intervals[2]);
+            ASSERT (intervals[3] == 3, "intervals[3] = %d\n", intervals[3]);
+            ASSERT (intervals[4] == 4, "intervals[4] = %d\n", intervals[4]);
+            ASSERT (intervals[5] == 5, "intervals[5] = %d\n", intervals[5]);
             break;
           }
         case 97:
